@@ -1,0 +1,23 @@
+<div style="background-color: black; width: 100%; height: 30px;"></div>
+
+<p>R: <input type="number" value="100" id="R"></input></p>
+<p>G: <input type="number" value="50" id="G"></input></p>
+<p>B: <input type="number" value="50" id="B"></input></p>
+
+<button id="ApplyButton">Apply</button>
+
+<script>
+  const applyButton = document.getElementById("ApplyButton");
+  const R = document.getElementById("R").value;
+  const G = document.getElementById("G").value;
+  const B = document.getElementById("B").value;
+  applyButton.onclick = () => {
+    parent.postMessage({ pluginMessage: { type: "updateRGB", R,G,B } }, "*");
+  };
+</script>
+
+<style>
+  * {
+    margin: 0;
+  }
+</style>
