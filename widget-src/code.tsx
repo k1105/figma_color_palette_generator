@@ -158,27 +158,34 @@ function ColorManager() {
         verticalAlignItems="center"
         horizontalAlignItems="center"
         onClick={async ()=>{
-          const currentWidget = figma.getNodeById(widgetId) as WidgetNode;
+          const currentWidget = figma.getNodeById(widgetId) as WidgetNode; // 現在操作しているwidgetを取得
           colInfo.forEach(async (info, index) => {
-            let txtCol = {r: 0, g: 0, b: 0};
-            const rgb = HEXToRGB(info.color);
-            const cmyk = RGBToCMYK(rgb.R, rgb.G, rgb.B);
-            const frame = figma.createFrame();
+            let txtCol = {r: 0, g: 0, b: 0}; //テキストの色
+            const rgb = HEXToRGB(info.color);  //HEX  -> RGB変換
+            const cmyk = RGBToCMYK(rgb.R, rgb.G, rgb.B); //RGB -> CMYK変換
+            const frame = figma.createFrame(); //カラーパレットのもとになるフレームの作成
             const brightness = Math.max(rgb.R, rgb.G, rgb.B);
-            if(brightness < 100) {
-              txtCol = {r: 1, g: 1, b: 1};
+            if(brightness < 100) { //もし、R, G Bのうち最大の明度の値が100を下回っていたら（=R: 100,G: 100,B: 100よりも暗かったら）
+              txtCol = {r: 1, g: 1, b: 1}; //テキストの色を白に
             }
+            /**
+             * オートレイアウト設定
+             */
             frame.layoutMode = "VERTICAL";
             frame.itemSpacing = 5;
             frame.verticalPadding = 20;
             frame.horizontalPadding = 20;
-            frame.x = currentWidget.x + (400 + 10) * index;
+            frame.x = currentWidget.x + (400 + 10) * index; //Widgetの位置を基準に
             frame.y = currentWidget.y + currentWidget.height + 100;
             frame.fills = [{ type: 'SOLID', color: { r: rgb.R / 255, g: rgb.G / 255, b: rgb.B / 255 } }]
             frame.resize(400, 400);
 
-            await figma.loadFontAsync({ family: "Inter", style: "Regular" })
+            await figma.loadFontAsync({ family: "Inter", style: "Regular" }) //フォントの読み込み
             
+            /**
+             * テキストをフレームに挿入
+             */
+
             frame.appendChild(createInlineText("Name", info.name, txtCol));
             frame.appendChild(createInlineText("CMYK", `C: ${cmyk.C} M: ${cmyk.M} Y: ${cmyk.Y} K: ${cmyk.K}`, txtCol));
             frame.appendChild(createInlineText("RGB", `R: ${rgb.R} G: ${rgb.G} B: ${rgb.B}`, txtCol));
