@@ -8,14 +8,11 @@ import { RGBToCMYK } from "../lib/RGBToCMYK";
 const { widget } = figma
 const { AutoLayout, useSyncedState, useEffect, Text, Frame, Rectangle } = widget
 
-async function createInlineText(name: string, char:string, color:{r: number, g: number, b: number}) {
+function createInlineText(name: string, char:string, color:{r: number, g: number, b: number}) {
   const text = figma.createText()
-
-  await figma.loadFontAsync(text.fontName as FontName);
   text.name = name;
   text.characters = char;
 
-  // Set bigger font size and red color
   text.fontSize = 18
   text.fills = [{ type: 'SOLID', color: color }]
   return text;
@@ -179,13 +176,16 @@ function ColorManager() {
             frame.y = currentWidget.y + currentWidget.height + 100;
             frame.fills = [{ type: 'SOLID', color: { r: rgb.R / 255, g: rgb.G / 255, b: rgb.B / 255 } }]
             frame.resize(400, 400);
+
+            await figma.loadFontAsync({ family: "Inter", style: "Regular" })
             
-            frame.appendChild(await createInlineText("Title", info.name, txtCol));
-            frame.appendChild(await createInlineText("CMYK", "C: "+cmyk.C+" M: "+cmyk.M+" Y: "+cmyk.Y+" K: "+cmyk.K, txtCol));
-            frame.appendChild(await createInlineText("RGB", "R: "+rgb.R+" G: "+rgb.G+" B: "+rgb.B, txtCol));
-            frame.appendChild(await createInlineText("HEX", "HEX: "+info.color.slice(1, 7), txtCol));
-            // frame.appendChild(await createInlineText("Pantone", "Pantone: "));
-            // frame.appendChild(await createInlineText("DIC", "DIC: "));
+            frame.appendChild(createInlineText("Name", info.name, txtCol));
+            frame.appendChild(createInlineText("CMYK", `C: ${cmyk.C} M: ${cmyk.M} Y: ${cmyk.Y} K: ${cmyk.K}`, txtCol));
+            frame.appendChild(createInlineText("RGB", `R: ${rgb.R} G: ${rgb.G} B: ${rgb.B}`, txtCol));
+            frame.appendChild(createInlineText("HEX", `HEX: ${info.color.slice(1, 7)}`, txtCol));
+            frame.appendChild(createInlineText("Pantone", "Pantone: ", txtCol));
+            frame.appendChild(createInlineText("DIC", "DIC: ", txtCol));
+            
             figma.currentPage.appendChild(frame);
           })
         }}
